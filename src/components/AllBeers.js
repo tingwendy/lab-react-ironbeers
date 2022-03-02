@@ -7,13 +7,26 @@ import axios from "axios";
 
 function AllBeers () {
     const [beers, setAllBeers] = useState([]);
+    const [searchBeers, setSearchBeers] = useState([...beers]);
 
     useEffect(()=> {
         axios
             .get('https://ih-beers-api2.herokuapp.com/beers')
-            .then((response)=> setAllBeers(response.data))
+            .then((response)=> {
+                setSearchBeers(response.data);
+                setAllBeers(response.data);
+            })
             .catch((err) => console.log(err));
     }, []);
+
+    function searchBeer (e) {
+        let search = e.target.value;
+
+        let beerResult = beers.filter((beer) => {
+            return beer.name.toLowerCase().includes(search.toLowerCase());
+        })
+        setSearchBeers(beerResult);
+    }
 
     
 
@@ -25,10 +38,12 @@ function AllBeers () {
         </Link>
         </header>
         <div>
-            All Beers Page
-        {beers.map((beer)=> {
+         <h1>All Beers</h1> 
+         <h3>Search for a beer: </h3>  
+         <input type="text" onChange={(e)=> searchBeer(e)}/>
+        {searchBeers.map((beer, i)=> {
             return(
-            <div key={beer._id}>
+            <div key={i}>
                 <Link to={`/beer/${beer._id}`} >
                 <img src = {beer.image_url} alt="beer" />
                 </Link>
